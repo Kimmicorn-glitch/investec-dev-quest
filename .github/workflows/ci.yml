@@ -20,6 +20,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
+          version: 9
           run_install: true
 
       - name: Build shared package
@@ -44,6 +45,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
+          version: 9
           run_install: true
 
       - name: Build shared package
@@ -73,7 +75,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install gitleaks CLI
+        run: |
+          GITLEAKS_VERSION=8.24.2
+          curl -sSL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -o gitleaks.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo mv gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+
       - name: Scan for secrets with gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gitleaks git --redact --verbose

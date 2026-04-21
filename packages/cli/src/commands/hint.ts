@@ -43,7 +43,7 @@ export function registerHintCommand(program: Command): void {
 
       if (opts.all) {
         if (unlocked.length === 0) {
-          console.log(chalk.dim('No hints unlocked yet. Run `investec-game hint` to unlock the first one.'))
+          console.log(chalk.dim('No hints unlocked yet. Run `pnpm game hint` to unlock the first one.'))
           return
         }
         for (const idx of unlocked) {
@@ -80,7 +80,7 @@ export function registerHintCommand(program: Command): void {
       // Ensure progress row exists
       const progress = getProgress(manifest.id)
       if (!progress) {
-        console.log(chalk.dim(`\nRun \`investec-game level ${level} --season ${season}\` first.`))
+        console.log(chalk.dim(`\nRun \`pnpm game level ${level} --season ${season}\` first.`))
       }
     })
 }

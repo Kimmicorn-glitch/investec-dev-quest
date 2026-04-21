@@ -44,7 +44,7 @@ export function resolveLevelSelection(opts: LevelSelectionOptions): LevelSelecti
   if (!current) {
     console.error(
       chalk.red(
-        'No active level selected. Run `investec-game level <number> --season <number>` first, or pass --season and --level.'
+        'No active level selected. Run `pnpm game level <number> --season <number>` first, or pass --season and --level.'
       )
     )
     process.exit(1)

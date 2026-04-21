@@ -64,7 +64,7 @@ export function registerLevelCommand(program: Command): void {
         chalk.bold.white(`\nLevel: ${manifest.name}`) +
           chalk.dim(` (S${manifest.season} L${manifest.level} — ${manifest.difficulty})`)
       )
-      console.log(chalk.dim('\nEdit solution.js then run: ') + chalk.cyan('investec-game test'))
+      console.log(chalk.dim('\nEdit solution.js then run: ') + chalk.cyan('pnpm game test'))
       if (manifest.apiRequired) {
         console.log(
           chalk.dim('This level uses the mock Investec API — it will start automatically.')

@@ -36,7 +36,7 @@ function getNextLevelCommand(currentLevelId: string): string | undefined {
 
   const next = sortedLevels[currentIndex + 1]?.manifest
   if (!next) return undefined
-  return `investec-game level ${next.level} --season ${next.season}`
+  return `pnpm game level ${next.level} --season ${next.season}`
 }
 
 export async function runLevelEvaluation(
@@ -114,7 +114,7 @@ export function registerTestCommand(program: Command): void {
       if (!existsSync(solutionPath)) {
         console.error(
           chalk.red(
-            `No solution.js found. Run: investec-game level ${level} --season ${season}`
+              `No solution.js found. Run: pnpm game level ${level} --season ${season}`
           )
         )
         console.log(

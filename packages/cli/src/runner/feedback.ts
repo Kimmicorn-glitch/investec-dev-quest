@@ -57,7 +57,7 @@ export function renderWinBanner(levelName: string, nextLevelCommand?: string): v
     chalk.white(`  "${levelName}" is solved.`),
     '',
     chalk.dim('  Both behavior tests and the attack script pass.'),
-    chalk.dim('  Run `investec-game status` to see your progress.'),
+    chalk.dim('  Run `pnpm game status` to see your progress.'),
   ]
 
   if (nextLevelCommand) {
@@ -119,10 +119,10 @@ export function renderBeginnerGuidance(): void {
     chalk.cyan.bold('  What to do next'),
     '',
     chalk.white('  1. Start with the first failing test above.'),
-    chalk.white('  2. Use `investec-game hint` for a nudge.'),
-    chalk.white('  3. Make one small change, then run `investec-game test` again.'),
+    chalk.white('  2. Use `pnpm game hint` for a nudge.'),
+    chalk.white('  3. Make one small change, then run `pnpm game test` again.'),
     '',
-    chalk.dim('  You can run `investec-game status` anytime to track progress.'),
+    chalk.dim('  You can run `pnpm game status` anytime to track progress.'),
   ].join('\n')
 
   console.log(

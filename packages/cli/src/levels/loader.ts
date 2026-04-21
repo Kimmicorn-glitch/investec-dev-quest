@@ -54,9 +54,16 @@ export function loadAllLevels(): ResolvedLevel[] {
 
   if (!existsSync(SEASONS_DIR)) return levels
 
-  for (const seasonEntry of readdirSync(SEASONS_DIR).sort()) {
-    const seasonDir = join(SEASONS_DIR, seasonEntry)
-    for (const levelEntry of readdirSync(seasonDir).sort()) {
+  for (const seasonEntry of readdirSync(SEASONS_DIR, { withFileTypes: true })) {
+    if (!seasonEntry.isDirectory()) continue
+    const seasonDir = join(SEASONS_DIR, seasonEntry.name)
+
+    const levelEntries = readdirSync(seasonDir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort()
+
+    for (const levelEntry of levelEntries) {
       const levelDir = join(seasonDir, levelEntry)
       try {
         levels.push(loadLevel(levelDir))

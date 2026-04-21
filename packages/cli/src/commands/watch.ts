@@ -40,7 +40,7 @@ export function registerWatchCommand(program: Command): void {
       if (!existsSync(solutionPath)) {
         console.error(
           chalk.red(
-            `No solution.js found. Run: investec-game level ${level} --season ${season}`
+            `No solution.js found. Run: pnpm game level ${level} --season ${season}`
           )
         )
         process.exit(1)

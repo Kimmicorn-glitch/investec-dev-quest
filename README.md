@@ -162,3 +162,7 @@ investec-developer-game/
 └── docs/
     └── authoring-guide.md
 ```
+
+## Inspired By
+
+Inspired by GitHub's [Secure Code Game](https://securitylab.github.com/secure-code-game/): "Learn to code securely while having fun through our popular open source in-editor experience. Get started in under 2 minutes" 

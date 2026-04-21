@@ -8,3 +8,8 @@ seasons/**/solution.js
 !seasons/**/reference/solution.js
 .investec-game/
 
+# VS Code: keep only shareable workspace config in git
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+

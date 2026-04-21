@@ -1,4 +1,17 @@
-# Investec Developer Game
+## ⚠️ Playground Project
+
+This is **not an official Investec product**.
+
+It's a community experiment --- a playground to test a fun, API game idea for developers in the [Investec Developer community](https://investec.gitbook.io/programmable-banking-community-wiki).
+
+If you'd like to improve it, simplify it, or make it more ridiculous (in
+a good way):
+
+PRs welcome.
+
+------------------------------------------------------------------------
+
+# 🛡️ Investec Developer Quest
 
 A **local-first, level-based developer game** for the Investec developer community.
 

@@ -39,7 +39,7 @@ Note: `code` is a **string**.
 
 Edit `solution.js`. The `beforeTransaction(event)` function has a bug.
 
-Find it. Fix it. Run `investec-game test` to verify.
+Find it. Fix it. Run `pnpm game test` to verify.
 
 **Do not change the blocked MCC list — only fix the comparison logic.**
 
@@ -48,4 +48,4 @@ Find it. Fix it. Run `investec-game test` to verify.
 - All behavior tests pass: allowed merchants go through, blocked MCCs are declined
 - The attack script — which exploits the type-coercion bug — is now blocked
 
-Run `investec-game test --season 2 --level 1` to check.
+Run `pnpm game test --season 2 --level 1` to check.

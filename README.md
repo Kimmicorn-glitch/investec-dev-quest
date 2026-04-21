@@ -51,22 +51,22 @@ pnpm game test
 ## CLI Commands
 
 ```bash
-investec-game level <n>               # Load a level (copies starter code, prints story)
-investec-game level <n> --season 2    # Load from a specific season (default: 1)
+pnpm game level <n>               # Load a level (copies starter code, prints story)
+pnpm game level <n> --season 2    # Load from a specific season (default: 1)
 
-investec-game test                     # Run tests + attack script on active level
-investec-game test --season 2 --level 1
+pnpm game test                     # Run tests + attack script on active level
+pnpm game test --season 2 --level 1
 
-investec-game watch                    # Re-run test + attack on file changes
-investec-game watch --season 2 --level 3 --debounce 300
+pnpm game watch                    # Re-run test + attack on file changes
+pnpm game watch --season 2 --level 3 --debounce 300
 
-investec-game hint                     # Reveal next hint
-investec-game hint --all               # Show all unlocked hints
+pnpm game hint                     # Reveal next hint
+pnpm game hint --all               # Show all unlocked hints
 
-investec-game reset                    # Restore starter code (with confirmation)
-investec-game reset --yes              # Skip confirmation
+pnpm game reset                    # Restore starter code (with confirmation)
+pnpm game reset --yes              # Skip confirmation
 
-investec-game status                   # Show progress across all levels
+pnpm game status                   # Show progress across all levels
 ```
 
 ---

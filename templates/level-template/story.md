@@ -23,4 +23,4 @@ Edit `solution.js` to implement:
 - All behavior tests pass
 - The attack script is blocked (the exploit no longer works)
 
-Run `investec-game test --season X --level Y` to check.
+Run `pnpm game test --season X --level Y` to check.

@@ -59,4 +59,4 @@ const baseUrl = process.env.GAME_API_BASE_URL
 - All behavior tests pass: authentication, pagination, balance aggregation
 - The attack script confirms credentials are not hardcoded
 
-Run `investec-game test` to check your progress.
+Run `pnpm game test` to check your progress.

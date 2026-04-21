@@ -33,8 +33,14 @@ jobs:
       - name: Validate levels before release
         run: |
           cp .env.example .env
-          npx tsx packages/mock-api/src/index.ts &
-          sleep 3
+          pnpm --filter @investec-game/mock-api exec tsx src/index.ts > /tmp/mock-api.log 2>&1 &
+          for i in {1..30}; do
+            if curl -sf http://localhost:3001/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -sf http://localhost:3001/health >/dev/null
           node scripts/validate-levels.mjs
         env:
           GAME_API_BASE_URL: http://localhost:3001

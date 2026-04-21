@@ -26,11 +26,11 @@ jobs:
       - name: Build shared package
         run: pnpm --filter @investec-game/shared build
 
-      - name: Type-check CLI
-        run: npx tsc -p packages/cli/tsconfig.json --noEmit
+      - name: Build and type-check CLI
+        run: pnpm --filter @investec-game/cli build
 
-      - name: Type-check mock-api
-        run: npx tsc -p packages/mock-api/tsconfig.json --noEmit
+      - name: Build and type-check mock-api
+        run: pnpm --filter @investec-game/mock-api build
 
   # ─── Level content contract ───────────────────────────────────────────────
   validate-levels:
@@ -54,9 +54,14 @@ jobs:
       - name: Start mock API
         run: |
           cp .env.example .env
-          npx tsx packages/mock-api/src/index.ts &
-          sleep 3
-          curl -sf http://localhost:3001/health
+          pnpm --filter @investec-game/mock-api exec tsx src/index.ts > /tmp/mock-api.log 2>&1 &
+          for i in {1..30}; do
+            if curl -sf http://localhost:3001/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -sf http://localhost:3001/health >/dev/null
 
       - name: Validate all levels
         run: node scripts/validate-levels.mjs

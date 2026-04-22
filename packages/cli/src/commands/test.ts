@@ -2,6 +2,7 @@ import type { Command } from 'commander'
 import { existsSync } from 'fs'
 import chalk from 'chalk'
 import ora from 'ora'
+import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel, loadAllLevels } from '../levels/loader.js'
 import { runTests, runAttack } from '../runner/testRunner.js'
 import {
@@ -100,29 +101,26 @@ export function registerTestCommand(program: Command): void {
     .option('-s, --season <n>', 'Season number')
     .option('-l, --level <n>', 'Level number')
     .action(async (opts: { season?: string; level?: string }) => {
-      const { season, level } = resolveLevelSelection(opts)
+      const { season, level } = resolveLevelSelection(program, opts)
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        console.error(chalk.red(`Level S${season}L${level} not found.`))
-        process.exit(2)
+        program.error(chalk.red(`Level S${season}L${level} not found.`), {
+          exitCode: EXIT_CODES.USAGE_ERROR,
+          code: 'game.test.not-found',
+        })
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, solutionPath } = resolved
 
       if (!existsSync(solutionPath)) {
-        console.error(
-          chalk.red(
-              `No solution.js found. Run: pnpm game level ${level} --season ${season}`
-          )
-        )
-        console.log(
-          chalk.dim(
+        program.error(
+          `${chalk.red(`No solution.js found. Run: pnpm game level ${level} --season ${season}`)}\n${chalk.dim(
             'Tip: loading a level creates starter code and sets your active level for test/hint/reset/watch.'
-          )
+          )}`,
+          { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.test.no-solution' }
         )
-        process.exit(2)
       }
 
       // Start mock API if this level needs it
@@ -132,10 +130,12 @@ export function registerTestCommand(program: Command): void {
           await ensureApiRunning()
           apiSpinner.succeed('Mock Investec API is running')
         } catch (err) {
-          apiSpinner.fail(
-            err instanceof Error ? err.message : 'Failed to start mock API'
-          )
-          process.exit(2)
+          const msg = err instanceof Error ? err.message : 'Failed to start mock API'
+          apiSpinner.fail(msg)
+          program.error(chalk.red(msg), {
+            exitCode: EXIT_CODES.USAGE_ERROR,
+            code: 'game.test.api-start-failed',
+          })
         }
       }
 
@@ -148,7 +148,7 @@ export function registerTestCommand(program: Command): void {
       const complete = await runLevelEvaluation(resolved, evaluationOptions)
       if (!complete) {
         renderBeginnerGuidance()
-        process.exitCode = 1
+        process.exitCode = EXIT_CODES.EXPECTED_TEST_FAILURE
       }
     })
 }

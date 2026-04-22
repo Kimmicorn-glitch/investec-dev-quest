@@ -1,6 +1,7 @@
 import type { Command } from 'commander'
 import { existsSync, readFileSync, copyFileSync, mkdirSync } from 'fs'
 import chalk from 'chalk'
+import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, upsertProgress, setCurrentLevel } from '../db/progress.js'
 
@@ -15,9 +16,12 @@ export function registerLevelCommand(program: Command): void {
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        console.error(chalk.red(`Level S${season}L${level} not found.`))
-        console.error(chalk.dim(`Looked in: seasons/season-${season}/level-${level}`))
-        process.exit(1)
+        program.error(
+          `${chalk.red(`Level S${season}L${level} not found.`)}\n${chalk.dim(
+            `Looked in: seasons/season-${season}/level-${level}`
+          )}`,
+          { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.level.not-found' }
+        )
       }
 
       const resolved = loadLevel(levelDir)
@@ -32,8 +36,10 @@ export function registerLevelCommand(program: Command): void {
       let progress = getProgress(manifest.id)
       if (!existsSync(solutionPath)) {
         if (!existsSync(starterPath)) {
-          console.error(chalk.red(`No starter code found at ${starterPath}`))
-          process.exit(1)
+          program.error(chalk.red(`No starter code found at ${starterPath}`), {
+            exitCode: EXIT_CODES.USAGE_ERROR,
+            code: 'game.level.no-starter',
+          })
         }
         mkdirSync(levelDir, { recursive: true })
         copyFileSync(starterPath, solutionPath)

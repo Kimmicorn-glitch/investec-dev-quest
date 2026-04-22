@@ -2,6 +2,7 @@ import type { Command } from 'commander'
 import { existsSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import chalk from 'chalk'
+import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, recordHintUnlock, getUnlockedHints } from '../db/progress.js'
 import { resolveLevelSelection } from './levelSelection.js'
@@ -14,12 +15,14 @@ export function registerHintCommand(program: Command): void {
     .option('-l, --level <n>', 'Level number')
     .option('--all', 'Show all previously unlocked hints')
     .action((opts: { season?: string; level?: string; all?: boolean }) => {
-      const { season, level } = resolveLevelSelection(opts)
+      const { season, level } = resolveLevelSelection(program, opts)
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        console.error(chalk.red(`Level S${season}L${level} not found.`))
-        process.exit(1)
+        program.error(chalk.red(`Level S${season}L${level} not found.`), {
+          exitCode: EXIT_CODES.USAGE_ERROR,
+          code: 'game.hint.not-found',
+        })
       }
 
       const resolved = loadLevel(levelDir)

@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 
 const args = process.argv.slice(2)
 const command = args[0]
@@ -19,6 +20,9 @@ if ((build.status ?? 1) !== 0) {
   process.exit(build.status ?? 1)
 }
 
+const sharedDistModuleUrl = pathToFileURL(resolve('packages/shared/dist/index.js')).href
+const { EXIT_CODES } = await import(sharedDistModuleUrl)
+
 const cli = existsSync(tsxBin)
   ? spawnSync(tsxBin, [cliEntrypoint, ...args], {
       stdio: 'inherit',
@@ -29,7 +33,7 @@ const exitCode = cli.status ?? 1
 
 // Gameplay test failures are expected while learning. Keep output clean and avoid
 // pnpm lifecycle noise, but preserve hard failures for broken commands/runtime issues.
-if (command === 'test' && exitCode === 1) {
+if (command === 'test' && exitCode === EXIT_CODES.EXPECTED_TEST_FAILURE) {
   process.exit(0)
 }
 

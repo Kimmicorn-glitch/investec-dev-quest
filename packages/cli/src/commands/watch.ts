@@ -4,6 +4,7 @@ import { relative } from 'path'
 import chalk from 'chalk'
 import ora from 'ora'
 import chokidar from 'chokidar'
+import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { ensureApiRunning } from '../services/apiProcess.js'
 import { runLevelEvaluation } from './test.js'
@@ -17,33 +18,35 @@ export function registerWatchCommand(program: Command): void {
     .option('-l, --level <n>', 'Level number')
     .option('-d, --debounce <ms>', 'Debounce delay in ms', '300')
     .action(async (opts: { season?: string; level?: string; debounce: string }) => {
-      const { season, level } = resolveLevelSelection(opts)
+      const { season, level } = resolveLevelSelection(program, opts)
       const parsedDebounce = parseInt(opts.debounce, 10)
       const debounceMs = Number.isFinite(parsedDebounce)
         ? Math.max(parsedDebounce, 0)
         : 300
 
       if (!Number.isFinite(parsedDebounce) || parsedDebounce < 0) {
-        console.error(chalk.red(`Invalid debounce value: ${opts.debounce}`))
-        process.exit(1)
+        program.error(chalk.red(`Invalid debounce value: ${opts.debounce}`), {
+          exitCode: EXIT_CODES.USAGE_ERROR,
+          code: 'game.watch.invalid-debounce',
+        })
       }
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        console.error(chalk.red(`Level S${season}L${level} not found.`))
-        process.exit(1)
+        program.error(chalk.red(`Level S${season}L${level} not found.`), {
+          exitCode: EXIT_CODES.USAGE_ERROR,
+          code: 'game.watch.not-found',
+        })
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, solutionPath, testsDir, attackDir, dir } = resolved
 
       if (!existsSync(solutionPath)) {
-        console.error(
-          chalk.red(
-            `No solution.js found. Run: pnpm game level ${level} --season ${season}`
-          )
+        program.error(
+          chalk.red(`No solution.js found. Run: pnpm game level ${level} --season ${season}`),
+          { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.watch.no-solution' }
         )
-        process.exit(1)
       }
 
       if (manifest.apiRequired) {
@@ -52,10 +55,12 @@ export function registerWatchCommand(program: Command): void {
           await ensureApiRunning()
           apiSpinner.succeed('Mock Investec API is running')
         } catch (err) {
-          apiSpinner.fail(
-            err instanceof Error ? err.message : 'Failed to start mock API'
-          )
-          process.exit(1)
+          const msg = err instanceof Error ? err.message : 'Failed to start mock API'
+          apiSpinner.fail(msg)
+          program.error(chalk.red(msg), {
+            exitCode: EXIT_CODES.USAGE_ERROR,
+            code: 'game.watch.api-start-failed',
+          })
         }
       }
 

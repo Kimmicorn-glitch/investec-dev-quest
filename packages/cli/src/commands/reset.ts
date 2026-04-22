@@ -1,6 +1,7 @@
 import type { Command } from 'commander'
 import { existsSync, copyFileSync } from 'fs'
 import chalk from 'chalk'
+import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, upsertProgress } from '../db/progress.js'
 import * as readline from 'readline'
@@ -14,20 +15,24 @@ export function registerResetCommand(program: Command): void {
     .option('-l, --level <n>', 'Level number')
     .option('-y, --yes', 'Skip confirmation prompt')
     .action(async (opts: { season?: string; level?: string; yes?: boolean }) => {
-      const { season, level } = resolveLevelSelection(opts)
+      const { season, level } = resolveLevelSelection(program, opts)
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        console.error(chalk.red(`Level S${season}L${level} not found.`))
-        process.exit(1)
+        program.error(chalk.red(`Level S${season}L${level} not found.`), {
+          exitCode: EXIT_CODES.USAGE_ERROR,
+          code: 'game.reset.not-found',
+        })
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, solutionPath, starterPath } = resolved
 
       if (!existsSync(starterPath)) {
-        console.error(chalk.red(`No starter code found at ${starterPath}`))
-        process.exit(1)
+        program.error(chalk.red(`No starter code found at ${starterPath}`), {
+          exitCode: EXIT_CODES.USAGE_ERROR,
+          code: 'game.reset.no-starter',
+        })
       }
 
       if (!opts.yes) {

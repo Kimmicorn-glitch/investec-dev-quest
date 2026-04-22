@@ -1,4 +1,6 @@
+import type { Command } from 'commander'
 import chalk from 'chalk'
+import { EXIT_CODES } from '@investec-game/shared'
 import { getCurrentLevelCoordinates, setCurrentLevel } from '../db/progress.js'
 
 interface LevelSelectionOptions {
@@ -11,15 +13,15 @@ interface LevelSelection {
   level: number
 }
 
-export function resolveLevelSelection(opts: LevelSelectionOptions): LevelSelection {
+export function resolveLevelSelection(program: Command, opts: LevelSelectionOptions): LevelSelection {
   const hasSeason = opts.season !== undefined
   const hasLevel = opts.level !== undefined
 
   if (hasSeason !== hasLevel) {
-    console.error(
-      chalk.red('Provide both --season and --level together, or omit both to use the active level.')
+    program.error(
+      chalk.red('Provide both --season and --level together, or omit both to use the active level.'),
+      { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.selection.missing-pair' }
     )
-    process.exit(1)
   }
 
   if (hasSeason && hasLevel) {
@@ -27,12 +29,16 @@ export function resolveLevelSelection(opts: LevelSelectionOptions): LevelSelecti
     const level = Number.parseInt(opts.level ?? '', 10)
 
     if (!Number.isFinite(season) || season <= 0) {
-      console.error(chalk.red(`Invalid season: ${opts.season}`))
-      process.exit(1)
+      program.error(chalk.red(`Invalid season: ${opts.season}`), {
+        exitCode: EXIT_CODES.USAGE_ERROR,
+        code: 'game.selection.invalid-season',
+      })
     }
     if (!Number.isFinite(level) || level <= 0) {
-      console.error(chalk.red(`Invalid level: ${opts.level}`))
-      process.exit(1)
+      program.error(chalk.red(`Invalid level: ${opts.level}`), {
+        exitCode: EXIT_CODES.USAGE_ERROR,
+        code: 'game.selection.invalid-level',
+      })
     }
 
     setCurrentLevel(`s${season}-l${level}`)
@@ -42,12 +48,12 @@ export function resolveLevelSelection(opts: LevelSelectionOptions): LevelSelecti
 
   const current = getCurrentLevelCoordinates()
   if (!current) {
-    console.error(
+    program.error(
       chalk.red(
         'No active level selected. Run `pnpm game level <number> --season <number>` first, or pass --season and --level.'
-      )
+      ),
+      { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.selection.no-active-level' }
     )
-    process.exit(1)
   }
 
   return current
